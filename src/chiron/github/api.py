@@ -60,9 +60,7 @@ class GitHubAPI:
             response.raise_for_status()
             return response.text
 
-    async def post_review(
-        self, owner: str, repo: str, pr_number: int, review: ReviewResult
-    ) -> Any:
+    async def post_review(self, owner: str, repo: str, pr_number: int, review: ReviewResult) -> Any:
         """Post a batched review on a pull request."""
         from chiron.github.reviews import format_review_for_github
 

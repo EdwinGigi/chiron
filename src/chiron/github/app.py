@@ -1,9 +1,9 @@
 import time
+from typing import Any
 
 import httpx
 import jwt
 from cryptography.hazmat.backends import default_backend
-from typing import Any
 from cryptography.hazmat.primitives import serialization
 
 

@@ -1,6 +1,7 @@
+from typing import Literal, cast
+
 from unidiff import PatchSet
 
-from typing import cast, Literal
 from chiron.models import DiffFile, DiffHunk, DiffHunkLine
 
 
@@ -65,6 +66,13 @@ def parse_diff(diff_text: str) -> list[DiffFile]:
                 )
             )
 
-        files.append(DiffFile(path=path, old_path=old_path, status=cast(Literal["added", "modified", "deleted", "renamed"], status), hunks=hunks))
+        files.append(
+            DiffFile(
+                path=path,
+                old_path=old_path,
+                status=cast(Literal["added", "modified", "deleted", "renamed"], status),
+                hunks=hunks,
+            )
+        )
 
     return files

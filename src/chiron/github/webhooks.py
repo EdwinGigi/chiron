@@ -14,7 +14,9 @@ def verify_signature(payload: bytes, signature: str, secret: str) -> bool:
     return hmac.compare_digest(f"sha256={expected_mac}", signature)
 
 
-def parse_webhook_event(headers: dict[str, Any], payload: dict[str, Any]) -> tuple[str, str, dict[str, Any]]:
+def parse_webhook_event(
+    headers: dict[str, Any], payload: dict[str, Any]
+) -> tuple[str, str, dict[str, Any]]:
     """Parse the GitHub webhook headers and payload."""
     event_type = headers.get("x-github-event", "")
     action = payload.get("action", "")
@@ -27,15 +29,23 @@ class WebhookRouter:
     def __init__(self) -> None:
         self._handlers: dict[str, Callable[[dict[str, Any]], Awaitable[Any]]] = {}
 
-    def add_handler(self, event_type: str, action: str, handler: Callable[[dict[str, Any]], Awaitable[Any]]) -> None:
+    def add_handler(
+        self, event_type: str, action: str, handler: Callable[[dict[str, Any]], Awaitable[Any]]
+    ) -> None:
         """Register a handler for a specific event and action."""
         key = f"{event_type}:{action}" if action else event_type
         self._handlers[key] = handler
 
-    def on(self, event_type: str, action: str = "") -> Callable[[Callable[[dict[str, Any]], Awaitable[Any]]], Callable[[dict[str, Any]], Awaitable[Any]]]:
+    def on(
+        self, event_type: str, action: str = ""
+    ) -> Callable[
+        [Callable[[dict[str, Any]], Awaitable[Any]]], Callable[[dict[str, Any]], Awaitable[Any]]
+    ]:
         """Decorator to register a handler."""
 
-        def decorator(func: Callable[[dict[str, Any]], Awaitable[Any]]) -> Callable[[dict[str, Any]], Awaitable[Any]]:
+        def decorator(
+            func: Callable[[dict[str, Any]], Awaitable[Any]],
+        ) -> Callable[[dict[str, Any]], Awaitable[Any]]:
             self.add_handler(event_type, action, func)
             return func
 
