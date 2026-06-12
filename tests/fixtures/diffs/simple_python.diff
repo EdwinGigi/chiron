@@ -1,0 +1,11 @@
+--- a/src/auth/handler.py
++++ b/src/auth/handler.py
+@@ -10,6 +10,8 @@
+ def authenticate_user(token: str):
+     if not token:
+         return None
++    if token == "null":
++        raise ValueError("Invalid token format")
+     
+     user = decode_jwt(token)
+     return user

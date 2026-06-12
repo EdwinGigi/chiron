@@ -1,0 +1,22 @@
+--- a/src/models/user.py
++++ b/src/models/user.py
+@@ -1,5 +1,6 @@
+ class User:
+-    def __init__(self, id, name):
++    def __init__(self, id: int, name: str):
+         self.id = id
+         self.name = name
++        self.is_active = True
+--- /dev/null
++++ b/src/utils/validators.py
+@@ -0,0 +1,2 @@
++def validate_email(email: str) -> bool:
++    return "@" in email
+--- a/tests/test_user.py
++++ b/tests/test_user.py
+@@ -2,4 +2,5 @@
+ 
+ def test_user_creation():
+     user = User(1, "Alice")
+     assert user.name == "Alice"
++    assert user.is_active is True

@@ -1,0 +1,35 @@
+{
+    "action": "opened",
+    "number": 42,
+    "pull_request": {
+        "url": "https://api.github.com/repos/EdwinGigi/chiron-demo/pulls/42",
+        "id": 123456789,
+        "number": 42,
+        "state": "open",
+        "title": "Fix authentication bug",
+        "body": "This fixes the auth bug.",
+        "head": {
+            "ref": "fix-auth",
+            "sha": "abc123def456"
+        },
+        "base": {
+            "ref": "main"
+        },
+        "user": {
+            "login": "EdwinGigi"
+        }
+    },
+    "repository": {
+        "name": "chiron-demo",
+        "full_name": "EdwinGigi/chiron-demo",
+        "owner": {
+            "login": "EdwinGigi"
+        }
+    },
+    "installation": {
+        "id": 9876543
+    },
+    "sender": {
+        "login": "EdwinGigi"
+    }
+}
