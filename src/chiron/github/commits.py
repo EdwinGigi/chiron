@@ -6,7 +6,7 @@ def format_commit_mutation(
     repo: str,
     branch: str,
     expected_head_oid: str,
-    file_changes: list[dict],
+    file_changes: list[dict[str, Any]],
     message: str,
 ) -> tuple[str, dict[str, Any]]:
     """Format GraphQL mutation for createCommitOnBranch."""

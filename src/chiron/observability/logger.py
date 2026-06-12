@@ -4,7 +4,7 @@ import sys
 import structlog
 
 
-def configure_logging(log_level: str = "INFO"):
+def configure_logging(log_level: str = "INFO") -> None:
     """Configure structured JSON logging."""
     level = getattr(logging, log_level.upper(), logging.INFO)
     logging.basicConfig(

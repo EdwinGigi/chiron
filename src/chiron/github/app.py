@@ -3,6 +3,7 @@ import time
 import httpx
 import jwt
 from cryptography.hazmat.backends import default_backend
+from typing import Any
 from cryptography.hazmat.primitives import serialization
 
 
@@ -17,9 +18,9 @@ class GitHubAppAuth:
         self.private_key = serialization.load_pem_private_key(
             private_key_bytes, password=None, backend=default_backend()
         )
-        self._tokens: dict[int, dict] = {}
+        self._tokens: dict[int, dict[str, Any]] = {}
 
-    def _generate_jwt(self) -> str:
+    def _generate_jwt(self) -> Any:
         """Generate a short-lived JWT for App authentication."""
         now = int(time.time())
         payload = {
@@ -27,9 +28,9 @@ class GitHubAppAuth:
             "exp": now + (10 * 60),  # 10 minutes maximum
             "iss": str(self.app_id),
         }
-        return jwt.encode(payload, self.private_key, algorithm="RS256")
+        return jwt.encode(payload, self.private_key, algorithm="RS256")  # type: ignore[arg-type]
 
-    async def get_installation_token(self, installation_id: int) -> str:
+    async def get_installation_token(self, installation_id: int) -> Any:
         """Get an installation token, using cache if available and valid."""
         cached = self._tokens.get(installation_id)
         if cached and cached["expires_at"] > time.time() + 60:

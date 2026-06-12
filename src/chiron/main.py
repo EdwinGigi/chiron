@@ -1,3 +1,5 @@
+from typing import Any
+
 import structlog
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
@@ -16,11 +18,11 @@ app = FastAPI(
     title="Chiron", description="Autonomous CI/CD Code Review & Remediation Agent", version="0.1.0"
 )
 
-router = WebhookRouter()
+router: WebhookRouter = WebhookRouter()
 
 
 @app.post("/webhooks/github")
-async def github_webhook(request: Request):
+async def github_webhook(request: Request) -> JSONResponse:
     """Receive GitHub webhooks."""
     payload = await request.body()
     signature = request.headers.get("x-hub-signature-256", "")
@@ -43,13 +45,13 @@ async def github_webhook(request: Request):
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> Any:
     """Health check endpoint for Cloud Run."""
     return get_health()
 
 
 @app.get("/")
-async def root():
+async def root() -> dict[str, str]:
     """Root endpoint info."""
     return {
         "name": "Chiron",
@@ -58,7 +60,7 @@ async def root():
     }
 
 
-def main():
+def main() -> None:
     """Run the application locally."""
     uvicorn.run("chiron.main:app", host="0.0.0.0", port=settings.port, reload=True)
 

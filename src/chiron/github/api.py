@@ -16,7 +16,7 @@ class GitHubAPI:
         }
         self.base_url = "https://api.github.com"
 
-    async def _get(self, endpoint: str, **kwargs) -> Any:
+    async def _get(self, endpoint: str, **kwargs: Any) -> Any:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 f"{self.base_url}{endpoint}", headers=self.headers, **kwargs
@@ -24,7 +24,7 @@ class GitHubAPI:
             response.raise_for_status()
             return response.json()
 
-    async def _post(self, endpoint: str, json: dict, **kwargs) -> Any:
+    async def _post(self, endpoint: str, json: dict[str, Any], **kwargs: Any) -> Any:
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{self.base_url}{endpoint}", headers=self.headers, json=json, **kwargs
@@ -44,7 +44,7 @@ class GitHubAPI:
             response.raise_for_status()
             return response.text
 
-    async def get_pr_files(self, owner: str, repo: str, pr_number: int) -> list[dict]:
+    async def get_pr_files(self, owner: str, repo: str, pr_number: int) -> Any:
         """Fetch the list of files changed in a pull request."""
         return await self._get(f"/repos/{owner}/{repo}/pulls/{pr_number}/files")
 
@@ -62,14 +62,14 @@ class GitHubAPI:
 
     async def post_review(
         self, owner: str, repo: str, pr_number: int, review: ReviewResult
-    ) -> dict:
+    ) -> Any:
         """Post a batched review on a pull request."""
         from chiron.github.reviews import format_review_for_github
 
         payload = format_review_for_github(review)
         return await self._post(f"/repos/{owner}/{repo}/pulls/{pr_number}/reviews", json=payload)
 
-    async def post_comment(self, owner: str, repo: str, issue_number: int, body: str) -> dict:
+    async def post_comment(self, owner: str, repo: str, issue_number: int, body: str) -> Any:
         """Post a general issue/PR comment."""
         return await self._post(
             f"/repos/{owner}/{repo}/issues/{issue_number}/comments", json={"body": body}
@@ -81,9 +81,9 @@ class GitHubAPI:
         repo: str,
         branch: str,
         expected_head_oid: str,
-        file_changes: list[dict],
+        file_changes: list[dict[str, Any]],
         message: str,
-    ) -> dict:
+    ) -> Any:
         """Push a commit using the GraphQL API."""
         from chiron.github.commits import format_commit_mutation
 

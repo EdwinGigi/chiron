@@ -32,4 +32,4 @@ class Settings(BaseSettings):
 
 def get_settings() -> Settings:
     """Returns the application settings."""
-    return Settings()
+    return Settings()  # type: ignore[call-arg]

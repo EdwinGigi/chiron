@@ -27,13 +27,13 @@ def get_health() -> HealthStatus:
     )
 
 
-def record_review_completed():
+def record_review_completed() -> None:
     """Increment the completed reviews counter."""
     global _REVIEWS_COMPLETED
     _REVIEWS_COMPLETED += 1
 
 
-def record_fix_applied():
+def record_fix_applied() -> None:
     """Increment the applied fixes counter."""
     global _FIXES_APPLIED
     _FIXES_APPLIED += 1
