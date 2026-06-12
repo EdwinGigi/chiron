@@ -1,0 +1,21 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.3.1, pluggy-1.5.0
+rootdir: /app
+plugins: cov-6.0.0, asyncio-0.25.0
+asyncio: mode=Mode.AUTO, default_loop_scope=None
+collected 3 items
+
+tests/test_auth.py .F.                                                    [100%]
+
+=================================== FAILURES ===================================
+________________________________ test_invalid_token ________________________________
+
+    def test_invalid_token():
+        token = "null"
+>       result = authenticate_user(token)
+E       ValueError: Invalid token format
+
+tests/test_auth.py:12: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_auth.py::test_invalid_token - ValueError: Invalid token format
+========================= 1 failed, 2 passed in 0.12s ==========================
