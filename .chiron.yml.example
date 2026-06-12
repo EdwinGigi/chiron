@@ -1,0 +1,27 @@
+# Chiron configuration — place in repository root
+chiron:
+  # Fix strategy: "direct" (push to PR branch) or "branch" (create fix PR)
+  fix_strategy: "branch"
+  
+  # Review settings
+  review:
+    enabled: true
+    auto_review_on_open: true
+    severity_threshold: "suggestion"  # minimum severity to report
+    ignore_patterns:
+      - "*.md"
+      - "docs/**"
+      - "*.lock"
+  
+  # Remediation settings
+  remediation:
+    enabled: true
+    auto_fix_on_ci_failure: true
+    max_fix_attempts: 3
+    require_approval_above: "warning"  # require human approval for warning+
+  
+  # CI/CD monitoring
+  ci:
+    monitor_failures: true
+    ignore_flaky_tests: true
+    max_auto_remediation_per_pr: 5
