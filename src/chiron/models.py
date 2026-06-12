@@ -1,9 +1,10 @@
-from typing import Literal, Optional
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class DiffHunkLine(BaseModel):
-    line_number: Optional[int]
+    line_number: int | None
     content: str
     type: Literal["added", "removed", "context"]
 
@@ -18,10 +19,10 @@ class DiffHunk(BaseModel):
 
 class DiffFile(BaseModel):
     path: str
-    old_path: Optional[str] = None
+    old_path: str | None = None
     status: Literal["added", "modified", "deleted", "renamed"]
     hunks: list[DiffHunk] = Field(default_factory=list)
-    language: Optional[str] = None
+    language: str | None = None
 
 
 class PRInfo(BaseModel):
@@ -29,7 +30,7 @@ class PRInfo(BaseModel):
     repo: str
     number: int
     title: str
-    body: Optional[str]
+    body: str | None
     head_sha: str
     head_ref: str
     base_ref: str
@@ -41,7 +42,7 @@ class ReviewComment(BaseModel):
     line: int
     body: str
     severity: Literal["critical", "warning", "suggestion", "nitpick"]
-    suggested_fix: Optional[str] = None
+    suggested_fix: str | None = None
 
 
 class ReviewResult(BaseModel):
@@ -52,7 +53,7 @@ class ReviewResult(BaseModel):
 
 class FixResult(BaseModel):
     success: bool
-    patch: Optional[str] = None
+    patch: str | None = None
     message: str
     attempts: int
 

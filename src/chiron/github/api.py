@@ -1,5 +1,6 @@
-import httpx
 from typing import Any
+
+import httpx
 
 from chiron.models import ReviewResult
 
@@ -59,30 +60,42 @@ class GitHubAPI:
             response.raise_for_status()
             return response.text
 
-    async def post_review(self, owner: str, repo: str, pr_number: int, review: ReviewResult) -> dict:
+    async def post_review(
+        self, owner: str, repo: str, pr_number: int, review: ReviewResult
+    ) -> dict:
         """Post a batched review on a pull request."""
         from chiron.github.reviews import format_review_for_github
-        
+
         payload = format_review_for_github(review)
         return await self._post(f"/repos/{owner}/{repo}/pulls/{pr_number}/reviews", json=payload)
 
     async def post_comment(self, owner: str, repo: str, issue_number: int, body: str) -> dict:
         """Post a general issue/PR comment."""
-        return await self._post(f"/repos/{owner}/{repo}/issues/{issue_number}/comments", json={"body": body})
+        return await self._post(
+            f"/repos/{owner}/{repo}/issues/{issue_number}/comments", json={"body": body}
+        )
 
     async def push_commit(
-        self, owner: str, repo: str, branch: str, expected_head_oid: str, file_changes: list[dict], message: str
+        self,
+        owner: str,
+        repo: str,
+        branch: str,
+        expected_head_oid: str,
+        file_changes: list[dict],
+        message: str,
     ) -> dict:
         """Push a commit using the GraphQL API."""
         from chiron.github.commits import format_commit_mutation
-        
-        query, variables = format_commit_mutation(owner, repo, branch, expected_head_oid, file_changes, message)
-        
+
+        query, variables = format_commit_mutation(
+            owner, repo, branch, expected_head_oid, file_changes, message
+        )
+
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{self.base_url}/graphql",
                 headers=self.headers,
-                json={"query": query, "variables": variables}
+                json={"query": query, "variables": variables},
             )
             response.raise_for_status()
             return response.json()

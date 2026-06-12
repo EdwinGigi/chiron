@@ -1,21 +1,19 @@
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
 import structlog
 import uvicorn
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 
 from chiron.config import get_settings
-from chiron.github.webhooks import WebhookRouter, verify_signature, parse_webhook_event
-from chiron.observability.logger import configure_logging
+from chiron.github.webhooks import WebhookRouter, parse_webhook_event, verify_signature
 from chiron.observability.health import get_health
+from chiron.observability.logger import configure_logging
 
 settings = get_settings()
 configure_logging(settings.log_level)
 logger = structlog.get_logger("chiron.main")
 
 app = FastAPI(
-    title="Chiron",
-    description="Autonomous CI/CD Code Review & Remediation Agent",
-    version="0.1.0"
+    title="Chiron", description="Autonomous CI/CD Code Review & Remediation Agent", version="0.1.0"
 )
 
 router = WebhookRouter()
@@ -26,14 +24,16 @@ async def github_webhook(request: Request):
     """Receive GitHub webhooks."""
     payload = await request.body()
     signature = request.headers.get("x-hub-signature-256", "")
-    
+
     if not verify_signature(payload, signature, settings.github_webhook_secret):
         logger.warning("Invalid webhook signature", signature=signature)
         raise HTTPException(status_code=401, detail="Invalid signature")
-        
-    event_type, action, event_payload = parse_webhook_event(dict(request.headers), await request.json())
+
+    event_type, action, event_payload = parse_webhook_event(
+        dict(request.headers), await request.json()
+    )
     logger.info("Received webhook", event_type=event_type, action=action)
-    
+
     try:
         result = await router.route(event_type, action, event_payload)
         return JSONResponse(content={"status": "processed", "result": result})
@@ -54,7 +54,7 @@ async def root():
     return {
         "name": "Chiron",
         "version": "0.1.0",
-        "description": "Autonomous CI/CD Code Review & Remediation Agent"
+        "description": "Autonomous CI/CD Code Review & Remediation Agent",
     }
 
 

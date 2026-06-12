@@ -1,8 +1,9 @@
 import time
-import jwt
+
 import httpx
-from cryptography.hazmat.primitives import serialization
+import jwt
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 
 
 class GitHubAppAuth:
@@ -39,7 +40,7 @@ class GitHubAppAuth:
             "Authorization": f"Bearer {jwt_token}",
             "Accept": "application/vnd.github.v3+json",
         }
-        
+
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"https://api.github.com/app/installations/{installation_id}/access_tokens",
@@ -47,10 +48,10 @@ class GitHubAppAuth:
             )
             response.raise_for_status()
             data = response.json()
-            
+
             # Simple expiry parsing - GitHub returns ISO format, we'll just cache for 50 mins
             self._tokens[installation_id] = {
                 "token": data["token"],
-                "expires_at": time.time() + (50 * 60)
+                "expires_at": time.time() + (50 * 60),
             }
             return data["token"]

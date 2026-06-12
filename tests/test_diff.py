@@ -3,18 +3,18 @@ from chiron.github.diff import parse_diff
 
 def test_parse_simple_diff(sample_diff_text):
     files = parse_diff(sample_diff_text)
-    
+
     assert len(files) == 1
     file = files[0]
-    
+
     assert file.path == "src/auth/handler.py"
     assert file.status == "modified"
     assert len(file.hunks) == 1
-    
+
     hunk = file.hunks[0]
     assert hunk.old_start == 10
     assert hunk.new_start == 10
-    
+
     # +if token == "null":
     # +    raise ValueError("Invalid token format")
     added_lines = [line for line in hunk.lines if line.type == "added"]
@@ -47,15 +47,14 @@ def test_parse_multi_file_diff():
 +    assert user.is_active is True
 """
     files = parse_diff(diff)
-    
+
     assert len(files) == 2
-    
+
     assert files[0].path == "src/models/user.py"
     assert files[0].status == "modified"
-    
-    # The /dev/null is parsed as part of previous diff due to lack of git headers in this test string
-    # For now we just verify it parses something
 
+    # The /dev/null is parsed as part of previous diff due to lack of git headers
+    # in this test string. For now we just verify it parses something.
 
 
 def test_parse_empty_diff():

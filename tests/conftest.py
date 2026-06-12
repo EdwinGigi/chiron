@@ -1,4 +1,5 @@
 import pytest
+
 from chiron.config import Settings
 from chiron.models import PRInfo
 
@@ -12,8 +13,9 @@ def sample_settings():
         gemini_api_key="test_gemini_key",
         redis_url="redis://localhost:6379",
         log_level="DEBUG",
-        fix_strategy="branch"
+        fix_strategy="branch",
     )
+
 
 @pytest.fixture
 def sample_pr_info():
@@ -26,8 +28,9 @@ def sample_pr_info():
         head_sha="abc123def456",
         head_ref="fix-auth",
         base_ref="main",
-        author="EdwinGigi"
+        author="EdwinGigi",
     )
+
 
 @pytest.fixture
 def sample_diff_text():
@@ -44,6 +47,7 @@ def sample_diff_text():
      return user
 """
 
+
 @pytest.fixture
 def sample_webhook_payload():
     return {
@@ -56,36 +60,24 @@ def sample_webhook_payload():
             "state": "open",
             "title": "Fix authentication bug",
             "body": "This fixes the auth bug.",
-            "head": {
-                "ref": "fix-auth",
-                "sha": "abc123def456"
-            },
-            "base": {
-                "ref": "main"
-            },
-            "user": {
-                "login": "EdwinGigi"
-            }
+            "head": {"ref": "fix-auth", "sha": "abc123def456"},
+            "base": {"ref": "main"},
+            "user": {"login": "EdwinGigi"},
         },
         "repository": {
             "name": "chiron-demo",
             "full_name": "EdwinGigi/chiron-demo",
-            "owner": {
-                "login": "EdwinGigi"
-            }
+            "owner": {"login": "EdwinGigi"},
         },
-        "installation": {
-            "id": 9876543
-        },
-        "sender": {
-            "login": "EdwinGigi"
-        }
+        "installation": {"id": 9876543},
+        "sender": {"login": "EdwinGigi"},
     }
+
 
 @pytest.fixture
 def sample_webhook_headers():
     return {
         "x-github-event": "pull_request",
         "x-github-delivery": "delivery-id-1234",
-        "x-hub-signature-256": "sha256=dummy_signature"
+        "x-hub-signature-256": "sha256=dummy_signature",
     }

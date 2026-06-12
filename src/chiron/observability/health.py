@@ -1,4 +1,5 @@
 import time
+
 from pydantic import BaseModel
 
 
@@ -22,13 +23,15 @@ def get_health() -> HealthStatus:
         version="0.1.0",
         uptime_seconds=time.time() - _START_TIME,
         reviews_completed=_REVIEWS_COMPLETED,
-        fixes_applied=_FIXES_APPLIED
+        fixes_applied=_FIXES_APPLIED,
     )
+
 
 def record_review_completed():
     """Increment the completed reviews counter."""
     global _REVIEWS_COMPLETED
     _REVIEWS_COMPLETED += 1
+
 
 def record_fix_applied():
     """Increment the applied fixes counter."""

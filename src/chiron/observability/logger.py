@@ -1,6 +1,7 @@
-import sys
-import structlog
 import logging
+import sys
+
+import structlog
 
 
 def configure_logging(log_level: str = "INFO"):
@@ -22,7 +23,7 @@ def configure_logging(log_level: str = "INFO"):
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             structlog.processors.UnicodeDecoder(),
-            structlog.processors.JSONRenderer()
+            structlog.processors.JSONRenderer(),
         ],
         context_class=dict,
         logger_factory=structlog.stdlib.LoggerFactory(),
