@@ -12,6 +12,8 @@
 
 **Chiron** is an autonomous GitHub App that doesn't just review your pull requests—it actively monitors your CI/CD pipelines, diagnoses test or linting failures, and automatically writes and tests the code to fix them. Powered by Google Gemini and built on FastAPI.
 
+**Video Demo Here: [https://edwingigi.github.io/assets/videos/chiron-demo.mp4](https://edwingigi.github.io/projects/chiron-ai)**
+
 ## ✨ Features
 
 - 🕵️‍♂️ **Intelligent PR Review**: Multi-dimensional analysis (correctness, performance, security) using Google Gemini 2.5.
