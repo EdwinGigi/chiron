@@ -14,6 +14,7 @@ from chiron.github.webhooks import WebhookRouter, parse_webhook_event, verify_si
 from chiron.models import PRInfo
 from chiron.observability.health import get_health, record_review_completed
 from chiron.observability.logger import configure_logging
+from chiron.remediation.loop import process_remediation
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -70,6 +71,11 @@ async def handle_pull_request(payload: dict[str, Any]) -> dict[str, Any]:
     review_result = await analyze_pr_diff(pr_info, diff_text, files)
 
     await api.post_review(owner, repo, pr_info.number, review_result)
+
+    # Trigger Remediation Loop
+    # We do this asynchronously/await it. In production, this might be sent
+    # to a task queue (like arq) but for Phase 3 we'll await it directly.
+    await process_remediation(api, pr_info, review_result)
 
     record_review_completed()
 
