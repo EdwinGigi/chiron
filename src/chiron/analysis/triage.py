@@ -36,6 +36,6 @@ async def analyze_pr_diff(pr_info: PRInfo, diff_text: str, files: list[DiffFile]
     logger.info(
         "Generated review",
         assessment=review.overall_assessment,
-        comments_count=len(review.comments)
+        comments_count=len(review.comments),
     )
     return review

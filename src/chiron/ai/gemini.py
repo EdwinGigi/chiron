@@ -33,6 +33,7 @@ class GeminiClient:
         # In newer versions of the SDK, response.parsed contains the Pydantic instance
         if hasattr(response, "parsed") and response.parsed is not None:
             from typing import cast
+
             return cast(T, response.parsed)
 
         # Fallback to manual parsing if response.parsed isn't populated
