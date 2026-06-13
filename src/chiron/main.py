@@ -73,8 +73,8 @@ async def handle_pull_request(payload: dict[str, Any]) -> dict[str, Any]:
     await api.post_review(owner, repo, pr_info.number, review_result)
 
     # Trigger Remediation Loop
-    # We do this asynchronously/await it. In production, this might be sent to a task queue (like arq)
-    # but for Phase 3 we'll await it directly.
+    # We do this asynchronously/await it. In production, this might be sent
+    # to a task queue (like arq) but for Phase 3 we'll await it directly.
     await process_remediation(api, pr_info, review_result)
 
     record_review_completed()

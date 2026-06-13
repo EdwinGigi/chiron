@@ -30,7 +30,8 @@ File Content:
 Review Comments to Fix:
 {comments_str}
 
-Generate a fix for this file. Provide a precise `search` block containing the EXACT lines from the original file that need to be replaced, and a `replace` block containing the new code.
+Generate a fix for this file. Provide a precise `search` block containing the EXACT lines from 
+the original file that need to be replaced, and a `replace` block containing the new code.
 The `search` block must match the file content exactly, including whitespace and indentation.
 Try to include enough context lines in your search block so it is unique.
 Do not include markdown code block backticks in your search/replace strings.
