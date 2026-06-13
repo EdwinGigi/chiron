@@ -101,6 +101,7 @@ async def handle_workflow_run_completed(payload: dict[str, Any]) -> dict[str, An
     if not installation_id:
         return {"status": "error", "message": "No installation ID"}
 
+    auth = GitHubAppAuth(settings.github_app_id, settings.github_private_key_path)
     token = await auth.get_installation_token(installation_id)
     api = GitHubAPI(token)
 
