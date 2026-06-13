@@ -100,9 +100,6 @@ class GitHubAPI:
 
     async def get_workflow_run_logs(self, owner: str, repo: str, run_id: int) -> str:
         """Fetch the raw logs of a workflow run."""
-        # Note: This endpoint redirects to a signed URL to download a zip file,
-        # which requires handling redirects and extracting the zip.
-        # A simpler approach for the prototype might be to fetch job logs.
         async with httpx.AsyncClient(follow_redirects=True) as client:
             response = await client.get(
                 f"{self.base_url}/repos/{owner}/{repo}/actions/runs/{run_id}/logs",
@@ -110,3 +107,15 @@ class GitHubAPI:
             )
             response.raise_for_status()
             return response.text
+
+    async def create_branch(self, owner: str, repo: str, branch_name: str, sha: str) -> Any:
+        """Create a new branch."""
+        payload = {"ref": f"refs/heads/{branch_name}", "sha": sha}
+        return await self._post(f"/repos/{owner}/{repo}/git/refs", json=payload)
+
+    async def create_pull_request(
+        self, owner: str, repo: str, title: str, head: str, base: str, body: str
+    ) -> Any:
+        """Create a new pull request."""
+        payload = {"title": title, "head": head, "base": base, "body": body}
+        return await self._post(f"/repos/{owner}/{repo}/pulls", json=payload)
