@@ -39,5 +39,5 @@ class GeminiClient:
         # Fallback to manual parsing if response.parsed isn't populated
         import json
 
-        data = json.loads(response.text)
+        data = json.loads(response.text or "{}")
         return schema(**data)
