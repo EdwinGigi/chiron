@@ -53,6 +53,10 @@ async def handle_pull_request(payload: dict[str, Any]) -> dict[str, Any]:
         author=pr_data.get("user", {}).get("login", ""),
     )
 
+    if pr_info.author.endswith("[bot]"):
+        logger.info("Skipping review for PR opened by a bot", author=pr_info.author)
+        return {"status": "skipped", "reason": "PR opened by a bot"}
+
     auth = GitHubAppAuth(settings.github_app_id, settings.github_private_key_path)
     token = await auth.get_installation_token(installation_id)
     api = GitHubAPI(token)

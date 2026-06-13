@@ -100,13 +100,27 @@ class GitHubAPI:
 
     async def get_workflow_run_logs(self, owner: str, repo: str, run_id: int) -> str:
         """Fetch the raw logs of a workflow run."""
+        import io
+        import zipfile
+
         async with httpx.AsyncClient(follow_redirects=True) as client:
             response = await client.get(
                 f"{self.base_url}/repos/{owner}/{repo}/actions/runs/{run_id}/logs",
                 headers=self.headers,
             )
             response.raise_for_status()
-            return response.text
+
+            try:
+                with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+                    logs = []
+                    for filename in z.namelist():
+                        # Read all files in the zip
+                        logs.append(f"--- {filename} ---")
+                        logs.append(z.read(filename).decode("utf-8", errors="replace"))
+                    return "\n".join(logs)
+            except zipfile.BadZipFile:
+                # Fallback if GitHub didn't return a zip
+                return response.text
 
     async def create_branch(self, owner: str, repo: str, branch_name: str, sha: str) -> Any:
         """Create a new branch."""

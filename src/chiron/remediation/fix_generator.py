@@ -44,4 +44,4 @@ async def generate_fix_for_file(file_content: str, comments: list[ReviewComment]
     client = GeminiClient()
 
     # We use Pro for generating actual code
-    return await client.generate_structured(prompt, GeneratedFix, model="gemini-2.5-pro")
+    return await client.generate_structured(prompt, GeneratedFix, model="gemini-2.5-flash")

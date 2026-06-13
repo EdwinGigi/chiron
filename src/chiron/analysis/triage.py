@@ -31,7 +31,7 @@ async def analyze_pr_diff(pr_info: PRInfo, diff_text: str, files: list[DiffFile]
 
     client = GeminiClient()
     # Use Pro model for deep code review
-    review = await client.generate_structured(prompt, ReviewResult, model="gemini-2.5-pro")
+    review = await client.generate_structured(prompt, ReviewResult, model="gemini-2.5-flash")
 
     logger.info(
         "Generated review",

@@ -64,7 +64,7 @@ async def process_failed_workflow(api: GitHubAPI, payload: dict[str, Any]) -> No
 
     try:
         diagnosis = await client.generate_structured(
-            prompt, CIDiagnosisResult, model="gemini-2.5-pro"
+            prompt, CIDiagnosisResult, model="gemini-2.5-flash"
         )
     except Exception as e:
         logger.error("Failed to generate CI diagnosis", error=str(e))
