@@ -5,9 +5,14 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from chiron.analysis.triage import analyze_pr_diff, triage_pr
 from chiron.config import get_settings
+from chiron.github.api import GitHubAPI
+from chiron.github.app import GitHubAppAuth
+from chiron.github.diff import parse_diff
 from chiron.github.webhooks import WebhookRouter, parse_webhook_event, verify_signature
-from chiron.observability.health import get_health
+from chiron.models import PRInfo
+from chiron.observability.health import get_health, record_review_completed
 from chiron.observability.logger import configure_logging
 
 settings = get_settings()
@@ -19,6 +24,56 @@ app = FastAPI(
 )
 
 router: WebhookRouter = WebhookRouter()
+
+
+@router.on("pull_request", "opened")
+@router.on("pull_request", "synchronize")
+async def handle_pull_request(payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle new or updated pull requests."""
+    pr_data = payload.get("pull_request", {})
+    repo_data = payload.get("repository", {})
+    owner = repo_data.get("owner", {}).get("login")
+    repo = repo_data.get("name")
+    installation_id = payload.get("installation", {}).get("id")
+
+    if not all([pr_data, owner, repo, installation_id]):
+        return {"status": "skipped", "reason": "Missing required payload data"}
+
+    pr_info = PRInfo(
+        owner=owner,
+        repo=repo,
+        number=pr_data.get("number"),
+        title=pr_data.get("title", ""),
+        body=pr_data.get("body"),
+        head_sha=pr_data.get("head", {}).get("sha", ""),
+        head_ref=pr_data.get("head", {}).get("ref", ""),
+        base_ref=pr_data.get("base", {}).get("ref", ""),
+        author=pr_data.get("user", {}).get("login", ""),
+    )
+
+    auth = GitHubAppAuth(settings.github_app_id, settings.github_private_key_path)
+    token = await auth.get_installation_token(installation_id)
+    api = GitHubAPI(token)
+
+    diff_text = await api.get_pr_diff(owner, repo, pr_info.number)
+    files = parse_diff(diff_text)
+
+    if not files:
+        return {"status": "skipped", "reason": "No files changed or unable to parse diff"}
+
+    triage_result = await triage_pr(pr_info, files)
+
+    if triage_result.category in ["docs_only", "trivial"]:
+        logger.info("Skipping full review based on triage", category=triage_result.category)
+        return {"status": "skipped", "reason": f"Triaged as {triage_result.category}"}
+
+    review_result = await analyze_pr_diff(pr_info, diff_text, files)
+
+    await api.post_review(owner, repo, pr_info.number, review_result)
+
+    record_review_completed()
+
+    return {"status": "reviewed", "comments_posted": len(review_result.comments)}
 
 
 @app.post("/webhooks/github")
