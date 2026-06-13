@@ -14,6 +14,7 @@ from chiron.github.webhooks import WebhookRouter, parse_webhook_event, verify_si
 from chiron.models import PRInfo
 from chiron.observability.health import get_health, record_review_completed
 from chiron.observability.logger import configure_logging
+from chiron.remediation.ci_agent import process_failed_workflow
 from chiron.remediation.loop import process_remediation
 
 settings = get_settings()
@@ -80,6 +81,33 @@ async def handle_pull_request(payload: dict[str, Any]) -> dict[str, Any]:
     record_review_completed()
 
     return {"status": "reviewed", "comments_posted": len(review_result.comments)}
+
+
+@router.on("workflow_run", action="completed")
+async def handle_workflow_run_completed(payload: dict[str, Any]) -> dict[str, Any]:
+    """Handle completed CI workflow runs."""
+    if not settings.ci_monitoring:
+        logger.info("CI monitoring is disabled")
+        return {"status": "skipped", "reason": "ci_monitoring disabled"}
+
+    workflow_run = payload.get("workflow_run", {})
+    conclusion = workflow_run.get("conclusion")
+
+    if conclusion != "failure":
+        logger.info("Workflow completed without failure, skipping", conclusion=conclusion)
+        return {"status": "skipped", "reason": f"conclusion is {conclusion}"}
+
+    installation_id = payload.get("installation", {}).get("id")
+    if not installation_id:
+        return {"status": "error", "message": "No installation ID"}
+
+    token = await auth.get_installation_token(installation_id)
+    api = GitHubAPI(token)
+
+    # Process the failed workflow
+    await process_failed_workflow(api, payload)
+
+    return {"status": "processed_workflow_failure"}
 
 
 @app.post("/webhooks/github")

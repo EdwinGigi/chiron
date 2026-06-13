@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     # Review settings
     max_fix_attempts: int = 3
     review_timeout_seconds: int = 300
+    ci_monitoring: bool = True
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
